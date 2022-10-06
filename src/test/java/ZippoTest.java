@@ -1,12 +1,17 @@
+import POJO.Location;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import jdk.nashorn.internal.ir.RuntimeNode;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
@@ -238,7 +243,121 @@ public class ZippoTest {
 
     }
 
+    @Test
+    public void extractingJsonPathInt(){
+
+        int limit =
+                given()
+
+                        .when()
+                        .get("https://gorest.co.in/public/v1/users")
+
+                        .then()
+                       // .log().body()
+                        .statusCode(200)
+                        .extract().path("meta.pagination.limit")
+                ;
+        System.out.println("limit = " + limit);
+        Assert.assertEquals(limit,10,"test sonucu");
+    }
+
+    @Test
+    public void extractingJsonPathInt2(){
+
+        int id =
+                given()
+
+                        .when()
+                        .get("https://gorest.co.in/public/v1/users")
+
+                        .then()
+                        // .log().body()
+                        .statusCode(200)
+                        .extract().path("data[2].id")
+                ;
+        System.out.println("id = " + id);
+    }
+
+    @Test
+    public void extractingJsonPathIntList(){
+
+        List<Integer> idler =
+                given()
+
+                        .when()
+                        .get("https://gorest.co.in/public/v1/users")
+
+                        .then()
+                        // .log().body()
+                        .statusCode(200)
+                        .extract().path("data.id") // data daki bütün id leri bir list şeklinde verir
+                ;
+        System.out.println("idler = " + idler);
+        Assert.assertTrue(idler.contains(3145));
+    }
+
+    @Test
+    public void extractingJsonPathIntList2(){
+
+        List<String> names =
+                given()
+
+                        .when()
+                        .get("https://gorest.co.in/public/v1/users")
+
+                        .then()
+                        // .log().body()
+                        .statusCode(200)
+                        .extract().path("data.name") // data daki bütün id leri bir list şeklinde verir
+                ;
+        System.out.println("names = " + names);
+        Assert.assertTrue(names.contains("Dr. Anang Guha"));
+    }
+
+    @Test
+    public void extractingJsonPathResponseAll(){
+
+        Response response =
+                given()
+
+                        .when()
+                        .get("https://gorest.co.in/public/v1/users")
+
+                        .then()
+                        // .log().body()
+                        .statusCode(200)
+                        .extract().response() // bütün body alındı
+                ;
+
+        List<Integer> idler = response.path("data.id");
+        List<String> isimler = response.path("data.name");
+        int limit = response.path("meta.pagination.limit");
+
+        System.out.println("limit = " + limit);
+        System.out.println("isimler = " + isimler);
+        System.out.println("idler = " + idler);
+    }
+
+    @Test
+    public void extractingJsonPOJO(){
+
+        Location yer =
+                given()
+
+                        .when()
+                        .get("http://api.zippopotam.us/us/90210")
+
+                        .then()
+                        .extract().as(Location.class); // Location şablonu
+                ;
+
+        System.out.println("yer = " + yer);
+        System.out.println("yer.getCountry() = " + yer.getCountry());
+        System.out.println("yer.getPlaces().get(0).getPlacename() = " + yer.getPlaces().get(0).getPlacename());
+    }
+
 }
+
 
 
 
