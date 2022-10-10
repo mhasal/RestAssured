@@ -55,7 +55,7 @@
                 <version>3.0.0-M1</version>
                 <configuration>
                     <suiteXmlFiles>
-                        <suiteXmlFile>src/test/java/XMLFiles/ParallelTesting_MasterReport.xml</suiteXmlFile>
+                        <suiteXmlFile>testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
                 </configuration>
             </plugin>
